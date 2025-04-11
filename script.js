@@ -243,23 +243,23 @@ document.getElementById('toggleMembers').addEventListener('click', () => {
 });
 
 // Funções para salvar e carregar dados no localStorage
-function saveHoursData(policeId, year, month, data) {
-    const key = `hoursData-${policeId}-${year}-${month}`;
+function saveHoursData(year, month, data) {
+    const key = `hoursData-${year}-${month}`;
     localStorage.setItem(key, JSON.stringify(data));
 }
 
-function loadHoursData(policeId, year, month) {
-    const key = `hoursData-${policeId}-${year}-${month}`;
+function loadHoursData(year, month) {
+    const key = `hoursData-${year}-${month}`;
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : [];
 }
 
 // Atualiza a lista de registros na tela
-function updateHourList(policeId) {
+function updateHourList() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const data = loadHoursData(policeId, year, month);
+    const data = loadHoursData(year, month);
     const hourList = document.getElementById('hourList');
     hourList.innerHTML = ''; // Limpa a lista antes de atualizar
 
@@ -276,12 +276,12 @@ function updateHourList(policeId) {
         const editBtn = document.createElement('button');
         editBtn.textContent = "Editar";
         editBtn.className = "ml-4 text-blue-500 hover:text-blue-700";
-        editBtn.onclick = () => editRecord(policeId, index);
+        editBtn.onclick = () => editRecord(index);
 
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = "Excluir";
         deleteBtn.className = "ml-4 text-red-500 hover:text-red-700";
-        deleteBtn.onclick = () => deleteRecord(policeId, index);
+        deleteBtn.onclick = () => deleteRecord(index);
 
         li.appendChild(span);
         li.appendChild(editBtn);
@@ -309,16 +309,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let currentPoliceId = null; // Armazena a matrícula do policial logado
     document.getElementById('hourForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        const policeId = document.getElementById('policeId').value.trim();
         const hourType = document.getElementById('hourType').value;
         const hourDate = document.getElementById('hourDate').value;
         const hourTime = document.getElementById('hourTime').value;
         const hourAmount = parseFloat(document.getElementById('hourAmount').value);
 
-        if (!policeId || !hourDate || !hourTime || isNaN(hourAmount) || hourAmount <= 0) {
+        if (!hourType || !hourDate || !hourTime || isNaN(hourAmount) || hourAmount <= 0) {
             alert('Por favor, preencha todos os campos corretamente.');
             return;
         }
@@ -331,32 +329,25 @@ document.addEventListener('DOMContentLoaded', () => {
             amount: hourAmount
         };
 
-        let data = loadHoursData(policeId, year, month - 1); // Mês no JavaScript é baseado em zero
+        let data = loadHoursData(year, month - 1); // Mês no JavaScript é baseado em zero
         data.push(record); // Adiciona o novo registro à lista
-        saveHoursData(policeId, year, month - 1, data);
-        currentPoliceId = policeId; // Define a matrícula do policial logado
-        updateHourList(policeId);
+        saveHoursData(year, month - 1, data);
+        updateHourList();
         document.getElementById('hourForm').reset();
     });
 
     // Inicializa a Lista ao Carregar a Página
-    const storedPoliceId = localStorage.getItem('currentPoliceId');
-    if (storedPoliceId) {
-        currentPoliceId = storedPoliceId;
-        document.getElementById('policeId').value = storedPoliceId;
-        updateHourList(storedPoliceId);
-    }
+    updateHourList();
 });
 
 // Função para editar um registro
-function editRecord(policeId, index) {
+function editRecord(index) {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    let data = loadHoursData(policeId, year, month);
+    let data = loadHoursData(year, month);
     const record = data[index];
 
-    document.getElementById('policeId').value = policeId;
     document.getElementById('hourType').value = record.type === 'Hora Extra' ? 'extra' : 'vd';
     document.getElementById('hourDate').value = record.date;
     document.getElementById('hourTime').value = record.time;
@@ -364,29 +355,19 @@ function editRecord(policeId, index) {
 
     // Remove o registro original
     data.splice(index, 1);
-    saveHoursData(policeId, year, month, data);
-    updateHourList(policeId);
+    saveHoursData(year, month, data);
+    updateHourList();
 }
 
 // Função para excluir um registro
-function deleteRecord(policeId, index) {
+function deleteRecord(index) {
     if (confirm("Tem certeza que deseja excluir este registro?")) {
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth();
-        let data = loadHoursData(policeId, year, month);
+        let data = loadHoursData(year, month);
         data.splice(index, 1);
-        saveHoursData(policeId, year, month, data);
-        updateHourList(policeId);
+        saveHoursData(year, month, data);
+        updateHourList();
     }
 }
-
-// Botão para buscar registros manualmente
-document.getElementById('searchRecords').addEventListener('click', () => {
-    const policeId = document.getElementById('policeId').value.trim();
-    if (!policeId) {
-        alert('Por favor, insira sua matrícula.');
-        return;
-    }
-    updateHourList(policeId);
-});
