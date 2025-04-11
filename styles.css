@@ -1,0 +1,47 @@
+/* Animações */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.scale-hover:hover {
+  transform: scale(1.05);
+}
+/* Destaques visuais */
+.highlight {
+  border: 2px solid #4f46e5; /* Cor azul */
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Sombra suave */
+}
+.active-pelotao {
+  border-left: 4px solid #4f46e5; /* Linha lateral azul */
+  padding-left: 10px;
+}
+/* Transições de slide */
+.slide-left-enter {
+  animation: slideLeftEnter 0.3s ease-out;
+}
+.slide-left-exit {
+  animation: slideLeftExit 0.3s ease-out;
+}
+@keyframes slideLeftEnter {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideLeftExit {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+/* Fade-out para atualizações dinâmicas */
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out;
+}
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+/* Ocultar elementos */
+.hidden {
+  display: none;
+}
